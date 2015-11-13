@@ -758,4 +758,28 @@
 			</Array>
 		</Message>
 	</MessageGroup>
+	<MessageGroup>
+		<Name>Thermostat</Name>
+		<Description/>
+		<MessageGroupID>80</MessageGroupID>
+		<Message>
+			<Name>Status</Name>
+			<Description></Description>
+			<MessageID>1</MessageID>
+			<MessageType>0</MessageType>
+			<MessageType>1</MessageType>
+			<MessageType>2</MessageType>
+			<MessageType>8</MessageType>
+			<MessageType>9</MessageType>
+			<MessageType>10</MessageType>
+			<Validity>test</Validity>
+			<UIntValue>
+				<ID>ValvePosition</ID>
+				<Description></Description>
+				<Bits>8</Bits>
+				<MinVal>0</MinVal>
+				<MaxVal>100</MaxVal>
+			</UIntValue>
+		</Message>
+	</MessageGroup>
 </Packet>
