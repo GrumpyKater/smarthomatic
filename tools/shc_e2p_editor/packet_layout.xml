@@ -773,7 +773,7 @@
 			<UIntValue>
 				<ID>ValvePosition</ID>
 				<Description></Description>
-				<Bits>8</Bits>
+				<Bits>7</Bits>
 				<MinVal>0</MinVal>
 				<MaxVal>100</MaxVal>
 			</UIntValue>

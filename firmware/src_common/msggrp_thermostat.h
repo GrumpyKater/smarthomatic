@@ -50,7 +50,7 @@ typedef enum {
 // MessageID: 1
 // Possible MessageTypes: SetGet, Status, AckStatus
 // Validity: test
-// Length w/o Header + HeaderExtension: 9 bits
+// Length w/o Header + HeaderExtension: 8 bits
 // Data fields: ValvePosition, Calibrate
 
 // Function to initialize header for the MessageType "SetGet".
@@ -85,41 +85,41 @@ static inline void pkg_header_init_thermostat_status_ackstatus(void)
   pkg_headerext_ackstatus_set_messagegroupid(80);
   pkg_headerext_ackstatus_set_messageid(1);
   __HEADEROFFSETBITS = 120;
-  __PACKETSIZEBYTES = 32;
+  __PACKETSIZEBYTES = 16;
   __MESSAGETYPE = 10;
 }
 
 // ValvePosition (UIntValue)
 
 // Set ValvePosition (UIntValue)
-// Offset: (uint16_t)__HEADEROFFSETBITS + 0, length bits 8, min val 0, max val 100
+// Offset: (uint16_t)__HEADEROFFSETBITS + 0, length bits 7, min val 0, max val 100
 static inline void msg_thermostat_status_set_valveposition(uint32_t val)
 {
-  array_write_UIntValue((uint16_t)__HEADEROFFSETBITS + 0, 8, val, bufx);
+  array_write_UIntValue((uint16_t)__HEADEROFFSETBITS + 0, 7, val, bufx);
 }
 
 // Get ValvePosition (UIntValue)
-// Offset: (uint16_t)__HEADEROFFSETBITS + 0, length bits 8, min val 0, max val 100
+// Offset: (uint16_t)__HEADEROFFSETBITS + 0, length bits 7, min val 0, max val 100
 static inline uint32_t msg_thermostat_status_get_valveposition(void)
 {
-  return array_read_UIntValue32((uint16_t)__HEADEROFFSETBITS + 0, 8, 0, 100, bufx);
+  return array_read_UIntValue32((uint16_t)__HEADEROFFSETBITS + 0, 7, 0, 100, bufx);
 }
 
 // Calibrate (UIntValue)
 // Description: If device is calibrated or not. If true is send, device will calibrate.
 
 // Set Calibrate (UIntValue)
-// Offset: (uint16_t)__HEADEROFFSETBITS + 8, length bits 1, min val 0, max val 7
+// Offset: (uint16_t)__HEADEROFFSETBITS + 7, length bits 1, min val 0, max val 3
 static inline void msg_thermostat_status_set_calibrate(uint32_t val)
 {
-  array_write_UIntValue((uint16_t)__HEADEROFFSETBITS + 8, 1, val, bufx);
+  array_write_UIntValue((uint16_t)__HEADEROFFSETBITS + 7, 1, val, bufx);
 }
 
 // Get Calibrate (UIntValue)
-// Offset: (uint16_t)__HEADEROFFSETBITS + 8, length bits 1, min val 0, max val 7
+// Offset: (uint16_t)__HEADEROFFSETBITS + 7, length bits 1, min val 0, max val 3
 static inline uint32_t msg_thermostat_status_get_calibrate(void)
 {
-  return array_read_UIntValue32((uint16_t)__HEADEROFFSETBITS + 8, 1, 0, 7, bufx);
+  return array_read_UIntValue32((uint16_t)__HEADEROFFSETBITS + 7, 1, 0, 3, bufx);
 }
 
 #endif /* _MSGGRP_THERMOSTAT_H */
