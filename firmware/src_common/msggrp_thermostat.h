@@ -48,34 +48,10 @@ typedef enum {
 // ---------------------------
 // MessageGroupID: 80
 // MessageID: 1
-// Possible MessageTypes: Get, Set, SetGet, Status, Ack, AckStatus
+// Possible MessageTypes: SetGet, Status, AckStatus
 // Validity: test
-// Length w/o Header + HeaderExtension: 8 bits
-// Data fields: ValvePosition
-
-// Function to initialize header for the MessageType "Get".
-static inline void pkg_header_init_thermostat_status_get(void)
-{
-  memset(&bufx[0], 0, sizeof(bufx));
-  pkg_header_set_messagetype(0);
-  pkg_headerext_get_set_messagegroupid(80);
-  pkg_headerext_get_set_messageid(1);
-  __HEADEROFFSETBITS = 95;
-  __PACKETSIZEBYTES = 16;
-  __MESSAGETYPE = 0;
-}
-
-// Function to initialize header for the MessageType "Set".
-static inline void pkg_header_init_thermostat_status_set(void)
-{
-  memset(&bufx[0], 0, sizeof(bufx));
-  pkg_header_set_messagetype(1);
-  pkg_headerext_set_set_messagegroupid(80);
-  pkg_headerext_set_set_messageid(1);
-  __HEADEROFFSETBITS = 95;
-  __PACKETSIZEBYTES = 16;
-  __MESSAGETYPE = 1;
-}
+// Length w/o Header + HeaderExtension: 9 bits
+// Data fields: ValvePosition, Calibrate
 
 // Function to initialize header for the MessageType "SetGet".
 static inline void pkg_header_init_thermostat_status_setget(void)
@@ -101,16 +77,6 @@ static inline void pkg_header_init_thermostat_status_status(void)
   __MESSAGETYPE = 8;
 }
 
-// Function to initialize header for the MessageType "Ack".
-static inline void pkg_header_init_thermostat_status_ack(void)
-{
-  memset(&bufx[0], 0, sizeof(bufx));
-  pkg_header_set_messagetype(9);
-  __HEADEROFFSETBITS = 109;
-  __PACKETSIZEBYTES = 16;
-  __MESSAGETYPE = 9;
-}
-
 // Function to initialize header for the MessageType "AckStatus".
 static inline void pkg_header_init_thermostat_status_ackstatus(void)
 {
@@ -119,7 +85,7 @@ static inline void pkg_header_init_thermostat_status_ackstatus(void)
   pkg_headerext_ackstatus_set_messagegroupid(80);
   pkg_headerext_ackstatus_set_messageid(1);
   __HEADEROFFSETBITS = 120;
-  __PACKETSIZEBYTES = 16;
+  __PACKETSIZEBYTES = 32;
   __MESSAGETYPE = 10;
 }
 
@@ -137,6 +103,23 @@ static inline void msg_thermostat_status_set_valveposition(uint32_t val)
 static inline uint32_t msg_thermostat_status_get_valveposition(void)
 {
   return array_read_UIntValue32((uint16_t)__HEADEROFFSETBITS + 0, 8, 0, 100, bufx);
+}
+
+// Calibrate (UIntValue)
+// Description: If device is calibrated or not. If true is send, device will calibrate.
+
+// Set Calibrate (UIntValue)
+// Offset: (uint16_t)__HEADEROFFSETBITS + 8, length bits 1, min val 0, max val 7
+static inline void msg_thermostat_status_set_calibrate(uint32_t val)
+{
+  array_write_UIntValue((uint16_t)__HEADEROFFSETBITS + 8, 1, val, bufx);
+}
+
+// Get Calibrate (UIntValue)
+// Offset: (uint16_t)__HEADEROFFSETBITS + 8, length bits 1, min val 0, max val 7
+static inline uint32_t msg_thermostat_status_get_calibrate(void)
+{
+  return array_read_UIntValue32((uint16_t)__HEADEROFFSETBITS + 8, 1, 0, 7, bufx);
 }
 
 #endif /* _MSGGRP_THERMOSTAT_H */

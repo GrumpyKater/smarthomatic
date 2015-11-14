@@ -176,83 +176,51 @@ bool MOTOR_Goto(uint8_t percent)
 	}
 }
 
-bool MOTOR_Calibrate(uint8_t percent)
+bool MOTOR_Calibrate(void)
 {
 	uint16_t postmp;
-	if (percent > 50) {
-		// - close till no movement or more than MOTOR_MAX_IMPULSES
-		MOTOR_PosAct = MOTOR_MAX_IMPULSES;
-		MOTOR_PosStop = 0;
-		MOTOR_H_BRIDGE_close();
-		do {
-			postmp = MOTOR_PosAct;
-			_delay_ms(100);
-		} while ((MOTOR_Dir != stop) && !((postmp == MOTOR_PosAct)||(postmp == MOTOR_PosAct-1)||(postmp == MOTOR_PosAct-2)||(postmp == MOTOR_PosAct-3)) && MOTOR_Mounted);
-		// stopped by ISR?, turning too long, not mounted -> error
-		if ((MOTOR_Dir == stop) || (MOTOR_Mounted == false)) {
-			return false;
-		}
-		// motor is on, but not turning any more -> endposition reached -> stop the motor
-		MOTOR_H_BRIDGE_stop();
-		// now open till no movement or more than MOTOR_MAX_IMPULSES
-		MOTOR_PosAct = 0;
-		MOTOR_PosStop = MOTOR_MAX_IMPULSES;
-		MOTOR_H_BRIDGE_open();
-		do {
-			postmp = MOTOR_PosAct;
-			_delay_ms(100);
-		} while ((MOTOR_Dir != stop) && !((postmp == MOTOR_PosAct)||(postmp == MOTOR_PosAct+1)||(postmp == MOTOR_PosAct+2)||(postmp == MOTOR_PosAct+3)) && MOTOR_Mounted);
-		// stopped by ISR?, turning too long, not mounted -> error
-		if ((MOTOR_Dir == stop) || (MOTOR_Mounted == false)) {
-			return false;
-		}
-		// motor is on, but not turning any more -> endposition reached -> stop the motor
-		MOTOR_H_BRIDGE_stop();
-		MOTOR_PosMax = MOTOR_PosAct;
-	} else {
-		// - open till no movement or more than MOTOR_MAX_IMPULSES
-		MOTOR_PosAct = 0;
-		MOTOR_PosStop = MOTOR_MAX_IMPULSES;
-		MOTOR_H_BRIDGE_open();
-		do {
-			postmp = MOTOR_PosAct;
-			//UART_PUTF("do1 postmp %u\r\n", postmp);
-			_delay_ms(100);
-			//UART_PUTF("- do1 %u\r\n", MOTOR_PosAct);
-		} while ((MOTOR_Dir != stop) && !((postmp == MOTOR_PosAct)||(postmp == MOTOR_PosAct-1)||(postmp == MOTOR_PosAct-2)||(postmp == MOTOR_PosAct-3)) && MOTOR_Mounted);
-		UART_PUTS("after do1\r\n");
-		UART_PUTF("MOTOR_PosAct %u\r\n", MOTOR_PosAct);
-		UART_PUTF("MOTOR_PosStop %u\r\n", MOTOR_PosStop);
-		// stopped by ISR?, turning too long, not mounted -> error
-		if ((MOTOR_Dir == stop) || (MOTOR_Mounted==false)) {
-			//UART_PUTS("after do1 if\r\n");
-			return false;
-		}
-		// motor is on, but not turning any more -> endposition reached -> stop the motor
-		MOTOR_H_BRIDGE_stop();
-		// now close till no movement or more than MOTOR_MAX_IMPULSES
-		MOTOR_PosAct = MOTOR_MAX_IMPULSES;
-		MOTOR_PosStop = 0;
-		MOTOR_H_BRIDGE_close();
-		do {
-			postmp = MOTOR_PosAct;
-			//UART_PUTF("do2 postmp %u\r\n", postmp);
-			_delay_ms(100);
-			//UART_PUTF("- do2 %u\r\n", MOTOR_PosAct);
-		} while ((MOTOR_Dir != stop) && !((postmp == MOTOR_PosAct)||(postmp == MOTOR_PosAct+1)||(postmp == MOTOR_PosAct+2)||(postmp == MOTOR_PosAct+3)) && MOTOR_Mounted);
-		UART_PUTS("after do2\r\n");
-		UART_PUTF("MOTOR_PosAct %u\r\n", MOTOR_PosAct);
-		UART_PUTF("MOTOR_PosStop %u\r\n", MOTOR_PosStop);
-		// stopped by ISR?, turning too long, not mounted -> error
-		if ((MOTOR_Dir == stop) || (MOTOR_Mounted==false)){
-			//UART_PUTS("after do2 if\r\n");
-			return false;
-		}
-		//UART_PUTS("true\r\n");
-		MOTOR_H_BRIDGE_stop();
-		MOTOR_PosMax = MOTOR_MAX_IMPULSES - MOTOR_PosAct;
-		MOTOR_PosAct = 0;
+	// - open till no movement or more than MOTOR_MAX_IMPULSES
+	MOTOR_PosAct = 0;
+	MOTOR_PosStop = MOTOR_MAX_IMPULSES;
+	MOTOR_H_BRIDGE_open();
+	do {
+		postmp = MOTOR_PosAct;
+		//UART_PUTF("do1 postmp %u\r\n", postmp);
+		_delay_ms(100);
+		//UART_PUTF("- do1 %u\r\n", MOTOR_PosAct);
+	} while ((MOTOR_Dir != stop) && !((postmp == MOTOR_PosAct)||(postmp == MOTOR_PosAct-1)||(postmp == MOTOR_PosAct-2)||(postmp == MOTOR_PosAct-3)) && MOTOR_Mounted);
+	UART_PUTS("after do1\r\n");
+	UART_PUTF("MOTOR_PosAct %u\r\n", MOTOR_PosAct);
+	UART_PUTF("MOTOR_PosStop %u\r\n", MOTOR_PosStop);
+	// stopped by ISR?, turning too long, not mounted -> error
+	if ((MOTOR_Dir == stop) || (MOTOR_Mounted==false)) {
+		//UART_PUTS("after do1 if\r\n");
+		return false;
 	}
+	// motor is on, but not turning any more -> endposition reached -> stop the motor
+	MOTOR_H_BRIDGE_stop();
+	// now close till no movement or more than MOTOR_MAX_IMPULSES
+	MOTOR_PosAct = MOTOR_MAX_IMPULSES;
+	MOTOR_PosStop = 0;
+	MOTOR_H_BRIDGE_close();
+	do {
+		postmp = MOTOR_PosAct;
+		//UART_PUTF("do2 postmp %u\r\n", postmp);
+		_delay_ms(100);
+		//UART_PUTF("- do2 %u\r\n", MOTOR_PosAct);
+	} while ((MOTOR_Dir != stop) && !((postmp == MOTOR_PosAct)||(postmp == MOTOR_PosAct+1)||(postmp == MOTOR_PosAct+2)||(postmp == MOTOR_PosAct+3)) && MOTOR_Mounted);
+	UART_PUTS("after do2\r\n");
+	UART_PUTF("MOTOR_PosAct %u\r\n", MOTOR_PosAct);
+	UART_PUTF("MOTOR_PosStop %u\r\n", MOTOR_PosStop);
+	// stopped by ISR?, turning too long, not mounted -> error
+	if ((MOTOR_Dir == stop) || (MOTOR_Mounted==false)){
+		//UART_PUTS("after do2 if\r\n");
+		return false;
+	}
+	//UART_PUTS("true\r\n");
+	MOTOR_H_BRIDGE_stop();
+	MOTOR_PosMax = MOTOR_MAX_IMPULSES - MOTOR_PosAct;
+	MOTOR_PosAct = 0;
 	UART_PUTF("MOTOR_PosAct %u\r\n", MOTOR_PosAct);
 	UART_PUTF("MOTOR_PosStop %u\r\n", MOTOR_PosStop);
 	UART_PUTF("MOTOR_PosMax %u\r\n", MOTOR_PosMax);
@@ -281,15 +249,8 @@ void send_deviceinfo_status(void)
 	rfm12_send_bufx();
 }
 
-void send_ack(uint32_t acksenderid, uint32_t ackpacketcounter, bool error)
+void send_ackStatus(uint32_t acksenderid, uint32_t ackpacketcounter, bool error)
 {
-	// any message can be used as ack, because they are the same anyway
-	if (error)
-	{
-		UART_PUTS("Send error Ack\r\n");
-		pkg_header_init_gpio_digitalporttimeout_ack(); // TODO
-	}
-
 	inc_packetcounter();
 	
 	// set common fields
@@ -317,7 +278,6 @@ void process_request(MessageTypeEnum messagetype, uint32_t messagegroupid, uint3
 	if (messagegroupid != MESSAGEGROUP_THERMOSTAT)
 	{
 		UART_PUTS("\r\nERR: Unsupported MessageGroupID.\r\n");
-		send_ack(acksenderid, ackpacketcounter, true);
 		return;
 	}
 	
@@ -328,58 +288,35 @@ void process_request(MessageTypeEnum messagetype, uint32_t messagegroupid, uint3
 		case MESSAGEID_THERMOSTAT_STATUS:
 			UART_PUTS("MESSAGEID_THERMOSTAT_STATUS\r\n");
 
+            if (msg_thermostat_status_get_calibrate() == 1) {
+                pkg_header_init_thermostat_status_ackstatus();
+				msg_thermostat_status_set_calibrate(2);
+				send_ackStatus(acksenderid, ackpacketcounter, false);
+
+                UART_PUTS("calibrate\r\n");
+				pkg_header_init_thermostat_status_status();
+                if (MOTOR_Calibrate()) {
+                    UART_PUTS("MOTOR_Calibrate true\r\n");
+					msg_thermostat_status_set_calibrate(1);
+					send_ackStatus(acksenderid, ackpacketcounter, false);
+                } else {
+                    UART_PUTS("MOTOR_Calibrate false\r\n");
+					msg_thermostat_status_set_calibrate(3);
+					send_ackStatus(acksenderid, ackpacketcounter, true);
+                }
+                return;
+            }
+
 			uint32_t position = msg_thermostat_status_get_valveposition();
 			UART_PUTF("MESSAGEID_THERMOSTAT_STATUS: %u\r\n", position);
-
-			switch (position) {
-				case 0:
-					MOTOR_H_BRIDGE_stop();
-					break;
-				case 1:
-					MOTOR_H_BRIDGE_close();
-					break;
-				case 2:
-					MOTOR_H_BRIDGE_open();
-					break;
-				case 3:
-					if (MOTOR_Calibrate(3)) {
-						UART_PUTS("MOTOR_Calibrate true\r\n");
-					} else {
-						UART_PUTS("MOTOR_Calibrate false\r\n");
-					}
-					break;
-				default:
-					MOTOR_Goto(position);
-			}
+            MOTOR_Goto(position);
 			UART_PUTS("done\r\n");
 			break;
 		default:
 			UART_PUTS("\r\nERR: Unsupported MessageID.");
-			send_ack(acksenderid, ackpacketcounter, true);
+			send_ackStatus(acksenderid, ackpacketcounter, true);
 			return;
 	}
-	
-	UART_PUTS("\r\n");
-
-	// In all cases, use the digitalporttimer message as answer.
-	// It contains the data for *all* pins and *all* timer values.
-
-	// "Set" -> send "Ack"
-	if (messagetype == MESSAGETYPE_SET)
-	{
-		pkg_header_init_thermostat_status_ack();
-
-		UART_PUTS("Sending Ack\r\n");
-	}
-	// "Get" or "SetGet" -> send "AckStatus"
-	else
-	{
-		pkg_header_init_thermostat_status_ackstatus();
-		
-		UART_PUTS("Sending AckStatus\r\n");
-	}
-
-	send_ack(acksenderid, ackpacketcounter, false);
 }
 
 // Check if incoming message is a legitimate request for this device.
@@ -469,19 +406,19 @@ int main(void)
 
 	util_init();
 	
-	//check_eeprom_compatibility(DEVICETYPE_THERMOSTAT);
+	//check_eeprom_compatibility(DEVICETYPE_THERMOSTAT); // TODO
 
 	// read packetcounter, increase by cycle and write back
 	packetcounter = e2p_generic_get_packetcounter() + PACKET_COUNTER_WRITE_CYCLE;
 	e2p_generic_set_packetcounter(packetcounter);
 
 	// read last received station packetcounter
-	//station_packetcounter = e2p_hr20_get_basestationpacketcounter();
+	//station_packetcounter = e2p_hr20_get_basestationpacketcounter(); // TODO
 	station_packetcounter = 0;
 	
 	// read device id
 	device_id = 99;
-	//device_id = e2p_generic_get_deviceid();
+	//device_id = e2p_generic_get_deviceid(); // TODO
 
 	osccal_init();
 
@@ -504,7 +441,7 @@ int main(void)
 
 	while (1)
 	{
-		if (loop == 50 && MOTOR_On()) {
+		if (loop == 50 && MOTOR_On()) { // TODO maybe < 50 is better
 			MOTOR_CheckBlocked();
 			loop = 0;
 		}
